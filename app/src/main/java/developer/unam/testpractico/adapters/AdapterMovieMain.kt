@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import developer.unam.testpractico.R
+import developer.unam.testpractico.db.AppDatabase
 import developer.unam.testpractico.retrofit.movies.Result
 
 class AdapterMovieMain(private val list: List<Result>, private val context: Context) :
@@ -23,10 +24,13 @@ class AdapterMovieMain(private val list: List<Result>, private val context: Cont
         RecyclerMovie(LayoutInflater.from(context).inflate(R.layout.row_movies, parent, false))
 
     override fun onBindViewHolder(holder: RecyclerMovie, position: Int) {
+        val item = list[position]
+        AppDatabase(context).insertMovie(item)
+
         Picasso.Builder(context).build()
             .load("https://image.tmdb.org/t/p/w500" + list[position].poster_path)
             .error(R.drawable.ic_cancel).into(holder.imgMovie)
-        holder.tvNameMovie.text = list[position].original_title
+        holder.tvNameMovie.text = list[position].title
     }
 
     override fun getItemCount(): Int = list.size
