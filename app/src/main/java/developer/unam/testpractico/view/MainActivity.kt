@@ -1,4 +1,4 @@
-package developer.unam.testpractico
+package developer.unam.testpractico.view
 
 import android.Manifest
 import android.content.*
@@ -13,28 +13,33 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.core.app.ActivityCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
+import developer.unam.testpractico.R
 import developer.unam.testpractico.adapters.AdapterMovieMain
 import developer.unam.testpractico.databinding.ActivityMainBinding
 import developer.unam.testpractico.db.AppDatabase
 import developer.unam.testpractico.retrofit.RetrofitInstance
 import developer.unam.testpractico.retrofit.movies.Movies
 import developer.unam.testpractico.servicelocation.ForegroundOnlyLocationService
+import developer.unam.testpractico.toText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var binding: ActivityMainBinding
     private val TAG = MainActivity::class.java.canonicalName
     private var foregroundOnlyLocationServiceBound = false
+    private var latitude:Double = 0.0
+    private var longitud:Double = 0.0
 
     // Provides location updates for while-in-use feature.
     private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
@@ -72,7 +77,14 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         val complete = binding.txtSelectFilter.editText as AutoCompleteTextView
         val network = activeNetwork != null && activeNetwork.isConnected()
         callServiceOrDataBase("popular", network, db)
-        complete.doOnTextChanged { text, start, before, count ->
+        binding.btnMap.setOnClickListener {
+            startActivity(Intent(this,MapsActivity::class.java).apply {
+                putExtra("latitude",latitude)
+                putExtra("longitud",longitud)
+            })
+        }
+
+        complete.doOnTextChanged { text, _, _, _ ->
             when (text.toString()) {
                 getString(R.string.popular) -> callServiceOrDataBase("popular", network, db)
                 getString(R.string.now_playing) -> callServiceOrDataBase("now_playing", network, db)
@@ -197,6 +209,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
+        FirebaseApp.initializeApp(this)
         if (!foregroundPermissionApproved())
             requestForegroundPermissions()
         val list = listOf<String>(
@@ -225,7 +238,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     ActivityCompat.requestPermissions(
                         this@MainActivity,
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                        Companion.REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
+                        REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
                     )
                 }
                 .show()
@@ -234,7 +247,7 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             ActivityCompat.requestPermissions(
                 this@MainActivity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                Companion.REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
+                REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
             )
         }
     }
@@ -245,12 +258,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
-
-    private fun logResultsToScreen(output: String) {
-        /*val outputWithPreviousLogs = "$output\n${binding.tvUbication.text}"
-        binding.tvUbication.text = outputWithPreviousLogs*/
-    }
-
 
     /**
      * Receiver for location broadcasts from [ForegroundOnlyLocationService].
@@ -263,7 +270,9 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
             )
 
             if (location != null) {
-                logResultsToScreen("Foreground location: ${location.toText()}")
+                Log.e("latlong",Gson().toJson(location))
+                latitude = location.latitude
+                longitud = location.longitude
             }
         }
     }

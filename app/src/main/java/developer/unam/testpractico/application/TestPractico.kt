@@ -1,4 +1,11 @@
 package developer.unam.testpractico.application
 
-class TestPractico {
+import android.app.Application
+import com.google.firebase.FirebaseApp
+
+class TestPractico : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseApp.initializeApp(applicationContext)
+    }
 }

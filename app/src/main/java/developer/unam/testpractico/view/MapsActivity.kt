@@ -1,26 +1,39 @@
 package developer.unam.testpractico.view
 
+import android.annotation.SuppressLint
+import android.icu.text.DateFormat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
+import android.util.Log
+import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-import developer.unam.testpractico.view.databinding.ActivityMapsBinding
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import developer.unam.testpractico.R
+import developer.unam.testpractico.databinding.ActivityMapsBinding
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
 
+    @SuppressLint("UseSupportActionBar")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setActionBar(binding.tlbMaps)
+        actionBar?.setHomeButtonEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_ios_24)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -28,21 +41,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    override fun onResume() {
+        super.onResume()
+        binding.tlbMaps.setNavigationOnClickListener {
+            onBackPressed()
+        }
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        Firebase.firestore.collection("ubication").get().addOnSuccessListener {
+            var last:QueryDocumentSnapshot? =null
+            for (doc in it){
+                Log.d("MapsActivity", "${doc.id} => ${doc.data["latitude"] as Double}, ${doc.data["longitude"] as Double}")
+                mMap.addMarker(MarkerOptions().position(LatLng(
+                    doc.data["latitude"] as Double,
+                    doc.data["longitude"] as Double
+                )).title(doc.id))
+                last = doc
+            }
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(
+                (last?.data?.get("latitude") ?:0.0) as Double,
+                (last?.data?.get("longitude") ?:0.0) as Double
+            )))
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        }
     }
 }

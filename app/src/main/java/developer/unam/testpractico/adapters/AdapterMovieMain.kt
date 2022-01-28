@@ -12,7 +12,12 @@ import developer.unam.testpractico.R
 import developer.unam.testpractico.db.AppDatabase
 import developer.unam.testpractico.retrofit.movies.Result
 
-class AdapterMovieMain(private val list: List<Result>, private val context: Context) :
+class AdapterMovieMain(
+    private val tipo:String,
+    private val list: List<Result>,
+    private val context: Context,
+    val flag: Boolean
+) :
     RecyclerView.Adapter<AdapterMovieMain.RecyclerMovie>() {
 
     inner class RecyclerMovie(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,7 +30,29 @@ class AdapterMovieMain(private val list: List<Result>, private val context: Cont
 
     override fun onBindViewHolder(holder: RecyclerMovie, position: Int) {
         val item = list[position]
-        AppDatabase(context).insertMovie(item)
+        when(tipo){
+            "popular"->{
+                if (flag)
+                    AppDatabase(context).insertMoviePopular(item)
+
+            }
+            "En cartelera"->{
+                if (flag)
+                    AppDatabase(context).insertMovieNowPlaying(item)
+            }
+            "Próximo"->{
+                "upcoming"
+                if (flag)
+                    AppDatabase(context).insertMovieUpcoming(item)
+            }
+            "Mejor calificado"->{
+                if (flag)
+                    AppDatabase(context).insertMovieTopRated(item)
+            }
+            else -> {
+
+            }
+        }
 
         Picasso.Builder(context).build()
             .load("https://image.tmdb.org/t/p/w500" + list[position].poster_path)

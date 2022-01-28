@@ -31,13 +31,15 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import developer.unam.testpractico.MainActivity
+import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import developer.unam.testpractico.view.MainActivity
 import developer.unam.testpractico.R
 /*import developer.unam.testpractico.SharedPreferenceUtil*/
 import developer.unam.testpractico.toText
@@ -72,7 +74,7 @@ class ForegroundOnlyLocationService : Service() {
     @SuppressLint("LongLogTag")
     override fun onCreate() {
         Log.d(TAG, "onCreate()")
-
+        FirebaseApp.initializeApp(applicationContext)
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // TODO: Step 1.2, Review the FusedLocationProviderClient.
@@ -84,7 +86,7 @@ class ForegroundOnlyLocationService : Service() {
 
             interval = TimeUnit.SECONDS.toMillis(60)
             fastestInterval = TimeUnit.SECONDS.toMillis(30)
-            maxWaitTime = TimeUnit.MINUTES.toMillis(30)
+            maxWaitTime = TimeUnit.MINUTES.toMillis(2)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
@@ -95,7 +97,17 @@ class ForegroundOnlyLocationService : Service() {
                 //Obtener la ultima localización del usuario
                 currentLocation = locationResult.lastLocation
                 //Realizar push a Firebase para tener las ubicaciones del usuario
-
+                FirebaseApp.initializeApp(applicationContext)
+                val db = Firebase.firestore
+                val map = hashMapOf(
+                    ("latitude" to currentLocation?.latitude?:0.0) as Pair<String, Double>,
+                    ("longitude" to currentLocation?.longitude?:0.0) as Pair<String, Double>,
+                )
+                db.collection("ubication").add(map).addOnSuccessListener {
+                    Log.e("foregroundService","elementros agregados exitosamente ${it.id}")
+                }.addOnFailureListener {
+                    Log.e("foregroundService","elementros agregados CON ERROR ${it.message}")
+                }
                 //Verificar que la app corre en segundo plano, y generar la norificación
                 if (serviceRunningInForeground) {
                     notificationManager.notify(

@@ -14,9 +14,8 @@ import retrofit2.http.Query
 
 interface RetrofitInstance {
     
-    @GET("movie/popular")
-    fun getMoviesPopular(@Query("api_key") apiKey:String, @Query("page")  page:Int): Call<Movies>
-
+    @GET("movie/{tipo}")
+    fun getMoviesPopular(@Path("tipo") tipo:String, @Query("api_key") apiKey:String, @Query("page")  page:Int): Call<Movies>
 
     companion object {
         fun getApi(): RetrofitInstance {

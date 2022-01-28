@@ -6,4 +6,10 @@
     <string name="preference_file_key">UbicationApp</string>
     <string name="permission_rationale">Solitud Permisos</string>
     <string name="key_api">a5c4683467758760b8c35ea81e8cc03a</string>
+    <string name="popular">Popular</string>
+    <string name="now_playing">En cartelera</string>
+    <string name="upcoming">Próximo</string>
+    <string name="top_rated">Mejor calificado</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="ubicaciones_del_usuario">Ubicaciones del usuario</string>
 </resources>
