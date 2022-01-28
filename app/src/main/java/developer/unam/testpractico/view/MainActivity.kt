@@ -181,10 +181,6 @@ class MainActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceCh
                     title = "No hay datos"
                     setMessage("No se encontraron datos ni conexion ")
                     setPositiveButton(android.R.string.ok) { dialog, which ->
-                        val intent = Intent(Intent.ACTION_MAIN)
-                        intent.addCategory(Intent.CATEGORY_HOME)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
                         dialog.dismiss()
                     }
                 }.create()

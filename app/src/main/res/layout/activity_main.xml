@@ -20,7 +20,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtSelectFilter"
-                style="@style/textInputLayoutStyle"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_marginEnd="@dimen/margin_end_component"
                 android:layout_height="?attr/actionBarSize"

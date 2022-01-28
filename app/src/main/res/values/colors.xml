@@ -7,5 +7,21 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="greyDisplay">#DCDCDC</color>
+    <color name="redTT">#E94848</color>
+    <color name="redTT_pressed">#DA1A1A</color>
+    <color name="redTT_no_enabled">#F18C8C</color>
+    <color name="grayTT">#b4b4b4</color>
+    <color name="grayWhite">#ECECEC</color>
+    <color name="darkerGrayTT">#4b4b4b</color>
+    <color name="yellowStar">#FFDF00</color>
+    <color name="blueText">#1e90ff</color>
+    <color name="color_blue">#1e90ff</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="green">#BF0DCD00</color>
+    <color name="backgroundBlack">#13172A</color>
+    <color name="cardMaterialBackground">#212E45</color>
 </resources>

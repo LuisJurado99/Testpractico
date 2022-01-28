@@ -1,21 +1,79 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TestPractico" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="TestPractico" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/redTT</item>
+        <item name="colorPrimaryVariant">@color/cardMaterialBackground</item>
+        <item name="colorOnPrimary">@color/redTT</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/redTT_no_enabled</item>
+        <item name="colorSecondaryVariant">@color/redTT_pressed</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:windowBackground">@color/backgroundBlack</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-
+        <item name="materialButtonStyle">@style/buttonText</item>
+        <item name="materialCardViewStyle">@style/materialStyleCard</item>
+        <item name="textInputStyle">@style/textViewStyle</item>
+        <item name="bottomNavigationStyle">@style/bottomNavigationBar</item>
+        <item name="searchViewStyle">@style/searchViewStyle</item>
+        <item name="tabStyle">@style/tabLayout</item>
+        <item name="appBarLayoutStyle">@style/tabLayout</item>
+        <item name="materialAlertDialogTheme">@style/alertStyle</item>
+        <item name="imageButtonStyle">@style/buttonBackStyle</item>
+        <item name="toolbarStyle">@style/toolbarStyle</item>
+        <item name="android:ratingBarStyle">@style/ratingBarStyle</item>
+        <item name="ratingBarStyleIndicator">@style/ratingBarStyleIn</item>
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <style name="textInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
-        <item name="boxBackgroundColor">@color/black</item>
+    <style name="ratingBarStyle" parent="Widget.AppCompat.RatingBar">
+        <item name="colorControlActivated">@color/yellowStar</item>
+        <item name="colorControlNormal">@color/yellowStar</item>
+        <item name="android:progressTint">@color/yellowStar</item>
+    </style>
+
+    <style name="ratingBarStyleIn" parent="Widget.AppCompat.RatingBar.Indicator">
+        <item name="colorControlActivated">@color/yellowStar</item>
+        <item name="colorControlNormal">@color/yellowStar</item>
+        <item name="android:progressTint">@color/yellowStar</item>
+    </style>
+
+    <style name="toolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/cardMaterialBackground</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="buttonBackStyle" parent="Widget.AppCompat.ImageButton">
+        <item name="android:tint">@color/white</item>
+    </style>
+
+    <style name="alertStyle" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:backgroundTint">@color/cardMaterialBackground</item>
+    </style>
+
+    <style name="buttonText" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="materialStyleCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/cardMaterialBackground</item>
+    </style>
+
+    <style name="textViewStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/cardMaterialBackground</item>
+    </style>
+
+    <style name="bottomNavigationBar" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="backgroundTint">@color/backgroundBlack</item>
+    </style>
+
+    <style name="searchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="android:background">@color/backgroundBlack</item>
+    </style>
+
+    <style name="tabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@color/cardMaterialBackground</item>
     </style>
 </resources>
