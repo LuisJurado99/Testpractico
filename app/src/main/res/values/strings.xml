@@ -12,4 +12,7 @@
     <string name="top_rated">Mejor calificado</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="ubicaciones_del_usuario">Ubicaciones del usuario</string>
+    <string name="archivo_title">Archivo Update</string>
+    <string name="archivo_update_successful">Archivo correctamente subido</string>
+    <string name="archivo_update_error">El archivo no se pudo subir correctamente</string>
 </resources>

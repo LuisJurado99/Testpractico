@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="developer.unam.testpractico" >
-
+    package="developer.unam.testpractico">
     <!-- Permisos de localizacion para el background y acceso exacto a la ubicacion -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
@@ -11,13 +10,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".application.TestPractico"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:name=".application.TestPractico"
         android:supportsRtl="true"
-        android:theme="@style/TestPractico" >
+        android:theme="@style/TestPractico">
+        <activity
+            android:name=".view.ArchivoActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -28,7 +31,7 @@
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".view.MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,6 +44,16 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>

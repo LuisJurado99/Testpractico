@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/drawable/ic_map.xml" value="0.3609375" />
+        <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/layout/activity_archivo.xml" value="0.34479166666666666" />
         <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/layout/activity_main.xml" value="0.34479166666666666" />
         <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/layout/activity_maps.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/layout/list_item.xml" value="0.34479166666666666" />
         <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/layout/row_movies.xml" value="0.18854166666666666" />
+        <entry key="..\:/Users/luisj/AndroidStudioProjects/TestPractico/app/src/main/res/xml/provider_paths.xml" value="0.18854166666666666" />
       </map>
     </option>
   </component>

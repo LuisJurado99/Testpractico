@@ -84,6 +84,10 @@ class MainActivity : AppCompatActivity(){
             })
         }
 
+        binding.btnCamara.setOnClickListener {
+            startActivity(Intent(this,ArchivoActivity::class.java))
+        }
+
         complete.doOnTextChanged { text, _, _, _ ->
             when (text.toString()) {
                 getString(R.string.popular) -> callServiceOrDataBase("popular", network, db)
