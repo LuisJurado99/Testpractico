@@ -15,4 +15,6 @@
     <string name="archivo_title">Archivo Update</string>
     <string name="archivo_update_successful">Archivo correctamente subido</string>
     <string name="archivo_update_error">El archivo no se pudo subir correctamente</string>
+    <string name="camara">Camera</string>
+    <string name="gallery">Gallery</string>
 </resources>
