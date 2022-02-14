@@ -1,4 +1,4 @@
-package developer.unam.testpractico.view
+package developer.unam.testpractico.view.home.view
 
 import android.Manifest
 import android.content.*
@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.core.app.ActivityCompat
@@ -26,20 +27,24 @@ import developer.unam.testpractico.databinding.ActivityMainBinding
 import developer.unam.testpractico.db.AppDatabase
 import developer.unam.testpractico.retrofit.RetrofitInstance
 import developer.unam.testpractico.retrofit.movies.Movies
+import developer.unam.testpractico.retrofit.movies.Result
 import developer.unam.testpractico.servicelocation.ForegroundOnlyLocationService
-import developer.unam.testpractico.toText
+import developer.unam.testpractico.view.ArchivoActivity
+import developer.unam.testpractico.view.MapsActivity
+import developer.unam.testpractico.view.home.IHomeContract
+import developer.unam.testpractico.view.home.presenter.HomePresenter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.properties.Delegates
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(),IHomeContract.View{
 
     private lateinit var binding: ActivityMainBinding
     private val TAG = MainActivity::class.java.canonicalName
     private var foregroundOnlyLocationServiceBound = false
     private var latitude:Double = 0.0
     private var longitud:Double = 0.0
+    private lateinit var presenter:IHomeContract.Presenter
 
     // Provides location updates for while-in-use feature.
     private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
@@ -61,6 +66,26 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
+
+        FirebaseApp.initializeApp(this)
+        if (!foregroundPermissionApproved())
+            requestForegroundPermissions()
+        val list = listOf<String>(
+            getString(R.string.popular),
+            getString(R.string.now_playing),
+            getString(R.string.upcoming),
+            getString(R.string.top_rated)
+        )
+
+        val edit = binding.txtSelectFilter.editText as AutoCompleteTextView
+        edit.setAdapter(ArrayAdapter(this, R.layout.list_item, list))
+    }
+
     override fun onStart() {
         super.onStart()
         //sharedPreferences.registerOnSharedPreferenceChangeListener(this)
@@ -71,30 +96,31 @@ class MainActivity : AppCompatActivity(){
 
     override fun onResume() {
         super.onResume()
-        val db = AppDatabase(this)
+        //val db = AppDatabase(this)
         val conMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = conMgr.getActiveNetworkInfo();
         val complete = binding.txtSelectFilter.editText as AutoCompleteTextView
-        val network = activeNetwork != null && activeNetwork.isConnected()
-        callServiceOrDataBase("popular", network, db)
+        //val network = activeNetwork != null && activeNetwork.isConnected()
+        presenter = HomePresenter(this,getString(R.string.popular),getString(R.string.key_api))
+        //callServiceOrDataBase("popular", network, db)
         binding.btnMap.setOnClickListener {
-            startActivity(Intent(this,MapsActivity::class.java).apply {
+            startActivity(Intent(this, MapsActivity::class.java).apply {
                 putExtra("latitude",latitude)
                 putExtra("longitud",longitud)
             })
         }
 
         binding.btnCamara.setOnClickListener {
-            startActivity(Intent(this,ArchivoActivity::class.java))
+            startActivity(Intent(this, ArchivoActivity::class.java))
         }
 
         complete.doOnTextChanged { text, _, _, _ ->
             when (text.toString()) {
-                getString(R.string.popular) -> callServiceOrDataBase("popular", network, db)
-                getString(R.string.now_playing) -> callServiceOrDataBase("now_playing", network, db)
-                getString(R.string.upcoming) -> callServiceOrDataBase("upcoming", network, db)
-                getString(R.string.top_rated) -> callServiceOrDataBase("top_rated", network, db)
-                else -> callServiceOrDataBase("popular", network, db)
+                getString(R.string.popular) -> presenter.changePath(getString(R.string.popular_r))
+                getString(R.string.now_playing) -> presenter.changePath(getString(R.string.now_playing_r))
+                getString(R.string.upcoming) -> presenter.changePath(getString(R.string.upcoming_r))
+                getString(R.string.top_rated) -> presenter.changePath(getString(R.string.top_rated_r))
+                else -> presenter.changePath(getString(R.string.popular_r))
 
             }
         }
@@ -120,105 +146,12 @@ class MainActivity : AppCompatActivity(){
         super.onPause()
     }
 
-    private fun callServiceOrDataBase(tipo: String, conection: Boolean, db: AppDatabase) {
-        Log.e("tippo", "tipo $tipo")
-        if (conection) {
-            val api =
-                RetrofitInstance.getApi().getMoviesPopular(tipo, getString(R.string.key_api), 1)
-            api.enqueue(object : Callback<Movies> {
-                override fun onResponse(call: Call<Movies>, response: Response<Movies>) {
-                    val listResult = response.body()
-                    if (listResult != null) {
-                        when (tipo) {
-                            "popular" -> db.deleteMoviesPopular()
-                            "now_playing" -> db.deleteMoviesNowPlaying()
-                            "upcoming" -> db.deleteMoviesUpcoming()
-                            "top_rated" -> db.deleteMoviesTopRated()
-                            else -> db.deleteMoviesPopular()
-                        }
-                        val adapter = AdapterMovieMain(
-                            tipo,
-                            listResult.results,
-                            this@MainActivity,
-                            false
-                        )
-                        binding.rvMainMovie.adapter = adapter
-                        binding.rvMainMovie.layoutManager = GridLayoutManager(this@MainActivity, 2)
-
-                    }else{
-                        val alert = MaterialAlertDialogBuilder(this@MainActivity)
-                        alert.apply {
-                            title = "No hay datos"
-                            setMessage("No hay datos en la petición")
-                            setPositiveButton(android.R.string.ok) { dialog, which ->
-                                val intent = Intent(Intent.ACTION_MAIN)
-                                intent.addCategory(Intent.CATEGORY_HOME)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                startActivity(intent)
-                                dialog.dismiss()
-                            }
-                        }.create()
-                        alert.show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Movies>, t: Throwable) {
-                    Log.e(MainActivity::class.java.simpleName, Gson().toJson(t))
-                }
-
-            })
-        } else {
-            val listNow = when (tipo) {
-                "popular" -> db.getAllMoviesPopular()
-                "now_playing" -> db.getAllMoviesNowPlaying()
-                "upcoming" -> db.getAllMoviesUpcoming()
-                "top_rated" -> db.getAllMoviesTopRated()
-                else -> db.getAllMoviesPopular()
-            }
-            if (listNow.isNotEmpty()) {
-                val adapter = AdapterMovieMain(tipo, listNow, this@MainActivity, false)
-                binding.rvMainMovie.adapter = adapter
-                binding.rvMainMovie.layoutManager = GridLayoutManager(this@MainActivity, 2)
-            } else {
-                val alert = MaterialAlertDialogBuilder(this)
-                alert.apply {
-                    title = "No hay datos"
-                    setMessage("No se encontraron datos ni conexion ")
-                    setPositiveButton(android.R.string.ok) { dialog, which ->
-                        dialog.dismiss()
-                    }
-                }.create()
-                alert.show()
-            }
-
-        }
-
-    }
-
     override fun onStop() {
         if (foregroundOnlyLocationServiceBound) {
             unbindService(foregroundOnlyServiceConnection)
             foregroundOnlyLocationServiceBound = false
         }
         super.onStop()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
-        FirebaseApp.initializeApp(this)
-        if (!foregroundPermissionApproved())
-            requestForegroundPermissions()
-        val list = listOf<String>(
-            getString(R.string.popular),
-            getString(R.string.now_playing),
-            getString(R.string.upcoming),
-            getString(R.string.top_rated)
-        )
-        val edit = binding.txtSelectFilter.editText as AutoCompleteTextView
-        edit.setAdapter(ArrayAdapter(this, R.layout.list_item, list))
     }
 
     private fun requestForegroundPermissions() {
@@ -272,6 +205,24 @@ class MainActivity : AppCompatActivity(){
 
     companion object {
         private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
+    }
+
+    override fun showLoader() {
+        binding.progressCircular.visibility = View.VISIBLE
+    }
+
+    override fun hideLoader() {
+        binding.progressCircular.visibility = View.GONE
+    }
+
+    override fun showListMovies(listMoviesShow: List<Result>) {
+        binding.rvMainMovie.layoutManager = GridLayoutManager(this,2)
+        binding.rvMainMovie.adapter = AdapterMovieMain(listMoviesShow,this)
+    }
+
+    override fun errorListMovies(statusCode: Int) {
+        binding.rvMainMovie.visibility = View.GONE
+        binding.tvNotElement.visibility = View.VISIBLE
     }
 
 }

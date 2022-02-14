@@ -13,10 +13,8 @@ import developer.unam.testpractico.db.AppDatabase
 import developer.unam.testpractico.retrofit.movies.Result
 
 class AdapterMovieMain(
-    private val tipo:String,
     private val list: List<Result>,
-    private val context: Context,
-    val flag: Boolean
+    private val context: Context
 ) :
     RecyclerView.Adapter<AdapterMovieMain.RecyclerMovie>() {
 
@@ -30,30 +28,6 @@ class AdapterMovieMain(
 
     override fun onBindViewHolder(holder: RecyclerMovie, position: Int) {
         val item = list[position]
-        when(tipo){
-            "popular"->{
-                if (flag)
-                    AppDatabase(context).insertMoviePopular(item)
-
-            }
-            "En cartelera"->{
-                if (flag)
-                    AppDatabase(context).insertMovieNowPlaying(item)
-            }
-            "Próximo"->{
-                "upcoming"
-                if (flag)
-                    AppDatabase(context).insertMovieUpcoming(item)
-            }
-            "Mejor calificado"->{
-                if (flag)
-                    AppDatabase(context).insertMovieTopRated(item)
-            }
-            else -> {
-
-            }
-        }
-
         Picasso.Builder(context).build()
             .load("https://image.tmdb.org/t/p/w500" + list[position].poster_path)
             .error(R.drawable.ic_cancel).into(holder.imgMovie)

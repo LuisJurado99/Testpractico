@@ -10,6 +10,10 @@
     <string name="now_playing">En cartelera</string>
     <string name="upcoming">Próximo</string>
     <string name="top_rated">Mejor calificado</string>
+    <string name="popular_r">popular</string>
+    <string name="now_playing_r">now_playing</string>
+    <string name="upcoming_r">upcoming</string>
+    <string name="top_rated_r">top_rated</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="ubicaciones_del_usuario">Ubicaciones del usuario</string>
     <string name="archivo_title">Archivo Update</string>

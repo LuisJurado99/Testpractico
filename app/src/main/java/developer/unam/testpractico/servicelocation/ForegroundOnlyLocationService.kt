@@ -39,7 +39,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import developer.unam.testpractico.view.MainActivity
+import developer.unam.testpractico.view.home.view.MainActivity
 import developer.unam.testpractico.R
 /*import developer.unam.testpractico.SharedPreferenceUtil*/
 import developer.unam.testpractico.toText

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".view.MainActivity">
+    tools:context=".view.home.view.MainActivity">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -22,8 +22,8 @@
                 android:id="@+id/txtSelectFilter"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="0dp"
-                android:layout_marginEnd="@dimen/margin_end_component"
                 android:layout_height="?attr/actionBarSize"
+                android:layout_marginEnd="@dimen/margin_end_component"
                 app:layout_constraintEnd_toStartOf="@id/btnMap"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -42,12 +42,32 @@
                 android:layout_height="30dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_map"
-                app:layout_constraintStart_toEndOf="@id/txtSelectFilter"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/txtSelectFilter"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvNotElement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/archivo_update_successful"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMainMovie"
@@ -59,14 +79,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/row_movies" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCamara"
         android:layout_width="wrap_content"
-        android:src="@android:drawable/ic_menu_camera"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/margin_top_image"
         android:layout_marginBottom="@dimen/margin_top_image"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@android:drawable/ic_menu_camera"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
