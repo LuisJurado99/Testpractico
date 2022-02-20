@@ -2,4 +2,5 @@
 <resources>
     <dimen name="margin_end_component">15dp</dimen>
     <dimen name="margin_top_image">50dp</dimen>
+    <dimen name="start_end_margin_component">25dp</dimen>
 </resources>

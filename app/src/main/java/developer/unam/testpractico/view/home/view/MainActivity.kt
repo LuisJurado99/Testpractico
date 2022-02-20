@@ -21,6 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import developer.unam.testpractico.R
 import developer.unam.testpractico.adapters.AdapterMovieMain
 import developer.unam.testpractico.databinding.ActivityMainBinding
@@ -29,6 +30,7 @@ import developer.unam.testpractico.retrofit.RetrofitInstance
 import developer.unam.testpractico.retrofit.movies.Movies
 import developer.unam.testpractico.retrofit.movies.Result
 import developer.unam.testpractico.servicelocation.ForegroundOnlyLocationService
+import developer.unam.testpractico.singleton.UserFirebaseSingleton
 import developer.unam.testpractico.view.ArchivoActivity
 import developer.unam.testpractico.view.MapsActivity
 import developer.unam.testpractico.view.home.IHomeContract
@@ -37,14 +39,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainActivity : AppCompatActivity(),IHomeContract.View{
+class MainActivity : AppCompatActivity(), IHomeContract.View {
 
     private lateinit var binding: ActivityMainBinding
     private val TAG = MainActivity::class.java.canonicalName
     private var foregroundOnlyLocationServiceBound = false
-    private var latitude:Double = 0.0
-    private var longitud:Double = 0.0
-    private lateinit var presenter:IHomeContract.Presenter
+    private var latitude: Double = 0.0
+    private var longitud: Double = 0.0
+    private lateinit var presenter: IHomeContract.Presenter
 
     // Provides location updates for while-in-use feature.
     private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
@@ -71,8 +73,13 @@ class MainActivity : AppCompatActivity(),IHomeContract.View{
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
+        val user = UserFirebaseSingleton.userFirebase
+        if (user != null) {
+            binding.tvNameUser.text = user.displayName
+            Picasso.Builder(this).build().load(user.photoUrl).error(R.drawable.ic_cancel)
+                .into(binding.imgUserEntry)
 
-        FirebaseApp.initializeApp(this)
+        }
         if (!foregroundPermissionApproved())
             requestForegroundPermissions()
         val list = listOf<String>(
@@ -101,13 +108,11 @@ class MainActivity : AppCompatActivity(),IHomeContract.View{
         val activeNetwork = conMgr.getActiveNetworkInfo();
         val complete = binding.txtSelectFilter.editText as AutoCompleteTextView
         //val network = activeNetwork != null && activeNetwork.isConnected()
-        presenter = HomePresenter(this,getString(R.string.popular),getString(R.string.key_api))
+        presenter = HomePresenter(this, getString(R.string.popular), getString(R.string.key_api))
+        presenter.initPresenterActions()
         //callServiceOrDataBase("popular", network, db)
         binding.btnMap.setOnClickListener {
-            startActivity(Intent(this, MapsActivity::class.java).apply {
-                putExtra("latitude",latitude)
-                putExtra("longitud",longitud)
-            })
+            startActivity(Intent(this, MapsActivity::class.java))
         }
 
         binding.btnCamara.setOnClickListener {
@@ -196,7 +201,7 @@ class MainActivity : AppCompatActivity(),IHomeContract.View{
             )
 
             if (location != null) {
-                Log.e("latlong",Gson().toJson(location))
+                Log.e("latlong", Gson().toJson(location))
                 latitude = location.latitude
                 longitud = location.longitude
             }
@@ -216,8 +221,8 @@ class MainActivity : AppCompatActivity(),IHomeContract.View{
     }
 
     override fun showListMovies(listMoviesShow: List<Result>) {
-        binding.rvMainMovie.layoutManager = GridLayoutManager(this,2)
-        binding.rvMainMovie.adapter = AdapterMovieMain(listMoviesShow,this)
+        binding.rvMainMovie.layoutManager = GridLayoutManager(this, 2)
+        binding.rvMainMovie.adapter = AdapterMovieMain(listMoviesShow, this)
     }
 
     override fun errorListMovies(statusCode: Int) {

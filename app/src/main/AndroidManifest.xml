@@ -18,6 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/TestPractico">
         <activity
+            android:name=".view.login.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".view.ArchivoActivity"
             android:exported="false" />
 
@@ -31,12 +39,8 @@
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".view.home.view.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="false">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service

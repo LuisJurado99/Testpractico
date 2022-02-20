@@ -21,4 +21,6 @@
     <string name="archivo_update_error">El archivo no se pudo subir correctamente</string>
     <string name="camara">Camera</string>
     <string name="gallery">Gallery</string>
+    <string name="login">Login</string>
+    <string name="error_generic">Lo sentimos. ocurrio un error</string>
 </resources>
