@@ -26,4 +26,5 @@
     <string name="error_generic">Lo sentimos. ocurrio un error</string>
     <string name="not_show_element">No hay elementos para mostrar</string>
     <string name="error_conection">Error conection</string>
+    <string name="cargando">Cargando...</string>
 </resources>

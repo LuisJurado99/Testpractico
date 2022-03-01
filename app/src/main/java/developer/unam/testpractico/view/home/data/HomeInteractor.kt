@@ -16,13 +16,14 @@ class HomeInteractor(private val apiKey: String) {
     fun retrieveFavoriteChangePath(
         responseCallback: IHomeContract.CallbackNecesary,
         path: String,
-        context: Context
+        context: Context,page:Int
     ) {
-        val api = RetrofitInstance.getApi().getMoviesPopular(path, apiKey, 1)
+        val api = RetrofitInstance.getApi().getMoviesPopular(path, apiKey, page)
         val dataBase = AppDatabase(context)
         api.enqueue(object : Callback<Movies> {
             override fun onResponse(call: Call<Movies>, response: Response<Movies>) {
                 val results = response.body()?.results
+                val totalPages = response.body()?.total_pages
                 if (response.isSuccessful && results != null) {
                     when (path.toString()) {
                         context.getString(R.string.popular_r) -> {
@@ -48,7 +49,7 @@ class HomeInteractor(private val apiKey: String) {
                             }
                         }
                     }
-                    responseCallback.onResponse(results, response.code())
+                    responseCallback.onResponse(results, response.code(),totalPages?:1)
                 } else {
                     val listInsert = when (path.toString()) {
                         context.getString(R.string.popular_r) -> dataBase.getAllMoviesPopular()
@@ -58,7 +59,7 @@ class HomeInteractor(private val apiKey: String) {
                         else -> dataBase.getAllMoviesNowPlaying()
                     }
                     if (listInsert.isNotEmpty())
-                        responseCallback.onResponse(listInsert, response.code())
+                        responseCallback.onResponse(listInsert, response.code(),totalPages?:1)
                     else
                         responseCallback.onError(400)
                 }

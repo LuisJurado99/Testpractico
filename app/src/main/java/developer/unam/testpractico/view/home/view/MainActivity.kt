@@ -11,25 +11,18 @@ import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import developer.unam.testpractico.R
 import developer.unam.testpractico.adapters.AdapterMovieMain
 import developer.unam.testpractico.databinding.ActivityMainBinding
-import developer.unam.testpractico.db.AppDatabase
-import developer.unam.testpractico.retrofit.RetrofitInstance
-import developer.unam.testpractico.retrofit.movies.Movies
 import developer.unam.testpractico.retrofit.movies.Result
 import developer.unam.testpractico.servicelocation.ForegroundOnlyLocationService
 import developer.unam.testpractico.singleton.UserFirebaseSingleton
@@ -37,18 +30,17 @@ import developer.unam.testpractico.view.ArchivoActivity
 import developer.unam.testpractico.view.MapsActivity
 import developer.unam.testpractico.view.home.IHomeContract
 import developer.unam.testpractico.view.home.presenter.HomePresenter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), IHomeContract.View {
 
     private lateinit var binding: ActivityMainBinding
     private val TAG = MainActivity::class.java.canonicalName
     private var foregroundOnlyLocationServiceBound = false
-    private var latitude: Double = 0.0
-    private var longitud: Double = 0.0
     private lateinit var presenter: IHomeContract.Presenter
+    private var page=1
+    private var pageTotal=0
+    private var pathLocal = ""
+    private lateinit var adapter:AdapterMovieMain
 
     // Provides location updates for while-in-use feature.
     private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
@@ -75,6 +67,8 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
+        adapter = AdapterMovieMain(this)
+        binding.rvMainMovie.adapter = adapter
         val user = UserFirebaseSingleton.userFirebase
         if (user != null) {
             Picasso.Builder(this).build().load(user.photoUrl).error(R.drawable.ic_cancel)
@@ -109,9 +103,46 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         val activeNetwork = conMgr.getActiveNetworkInfo();
         val complete = binding.txtSelectFilter.editText as AutoCompleteTextView
         //val network = activeNetwork != null && activeNetwork.isConnected()
-        presenter = HomePresenter(this, getString(R.string.key_api),this)
+        presenter = HomePresenter(this, getString(R.string.key_api), this)
+        pathLocal =getString(R.string.popular_r)
+        presenter.changePath(pathLocal,page)
+        val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        binding.rvMainMovie.layoutManager = layoutManager
+        var isScrolling = false
+        binding.rvMainMovie.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true
+                }
+            }
 
-        presenter.changePath(getString(R.string.popular_r))
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItems: IntArray? = layoutManager.findFirstVisibleItemPositions(null)
+                val pastVisibleItems =
+                    if (firstVisibleItems != null && firstVisibleItems.isNotEmpty()) {
+                        firstVisibleItems[0]
+                    } else 0
+
+                if (isScrolling) {
+                    if (visibleItemCount + pastVisibleItems >= totalItemCount) {
+                        isScrolling = false
+                        page+=1
+                        if (page<pageTotal)
+                            presenter.changePath(pathLocal,page)
+                        Log.e("page","page $page")
+                    }
+                }
+
+            }
+        })
+
+
 
         binding.btnMap.setOnClickListener {
             startActivity(Intent(this, MapsActivity::class.java))
@@ -122,14 +153,15 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         }
 
         complete.doOnTextChanged { text, _, _, _ ->
-            when (text.toString()) {
-                getString(R.string.popular) -> presenter.changePath(getString(R.string.popular_r))
-                getString(R.string.now_playing) -> presenter.changePath(getString(R.string.now_playing_r))
-                getString(R.string.upcoming) -> presenter.changePath(getString(R.string.upcoming_r))
-                getString(R.string.top_rated) -> presenter.changePath(getString(R.string.top_rated_r))
-                else -> presenter.changePath(getString(R.string.popular_r))
-
+            pathLocal = text.toString()
+            pathLocal =when (text.toString()) {
+                getString(R.string.popular) -> getString(R.string.popular_r)
+                getString(R.string.now_playing) -> getString(R.string.now_playing_r)
+                getString(R.string.upcoming) -> getString(R.string.upcoming_r)
+                getString(R.string.top_rated) -> getString(R.string.top_rated_r)
+                else -> getString(R.string.popular_r)
             }
+            presenter.changePath(pathLocal,page)
         }
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -201,13 +233,8 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
             val location = intent.getParcelableExtra<Location>(
                 ForegroundOnlyLocationService.EXTRA_LOCATION
             )
-
-            if (location != null) {
-                Log.e("latlong", Gson().toJson(location))
-                latitude = location.latitude
-                longitud = location.longitude
-            }
         }
+
     }
 
     companion object {
@@ -222,18 +249,18 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         binding.progressCircular.visibility = View.GONE
     }
 
-    override fun showListMovies(listMoviesShow: List<Result>, statusCode: Int) {
-        Log.e("listShow","list ${Gson().toJson(listMoviesShow)}")
+    override fun showListMovies(listMoviesShow: List<Result>, statusCode: Int, totalPages: Int) {
+        this.pageTotal=totalPages
         binding.rvMainMovie.visibility = View.VISIBLE
         binding.tvNotElement.visibility = View.GONE
-        binding.rvMainMovie.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        binding.rvMainMovie.adapter = AdapterMovieMain(listMoviesShow, this)
+        adapter.addItems(listMoviesShow.toMutableList())
+
         if (statusCode == 400)
-            Toast.makeText(this,getString(R.string.error_conection),Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_conection), Toast.LENGTH_SHORT).show()
     }
 
     override fun errorListMovies(statusCode: Int) {
-        Log.e("listShow","list $statusCode")
+        Log.e("listShow", "list $statusCode")
         binding.rvMainMovie.visibility = View.GONE
         binding.tvNotElement.visibility = View.VISIBLE
     }

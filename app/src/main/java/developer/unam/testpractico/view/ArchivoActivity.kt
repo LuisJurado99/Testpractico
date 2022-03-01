@@ -20,12 +20,19 @@ class ArchivoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityArchivoBinding
 
     private val takeImageResult = registerForActivityResult(ActivityResultContracts.TakePicture()){ it ->
+        val alertDialog = MaterialAlertDialogBuilder(this).apply {
+            setTitle(R.string.archivo_title)
+            setMessage(R.string.cargando)
+            setCancelable(false)
+        }.create()
+        alertDialog.show()
         if (it){
             latestTmUri?.let{ uri->
                 val storage = Firebase.storage.getReference(uri.encodedPath.toString())
                 storage.child("images/${uri.encodedPath?.split(" / ")?.last().toString()}")
                 storage.putFile(uri).apply {
                     addOnCompleteListener {
+                        alertDialog.dismiss()
                         if (it.isSuccessful){
                             val alert= MaterialAlertDialogBuilder(this@ArchivoActivity).apply {
                                 setTitle(R.string.archivo_title)
@@ -34,6 +41,7 @@ class ArchivoActivity : AppCompatActivity() {
                             }
                             alert.create().show()
                         }else{
+                            alertDialog.dismiss()
                             val alert= MaterialAlertDialogBuilder(this@ArchivoActivity).apply {
                                 setTitle(R.string.archivo_title)
                                 setMessage(R.string.archivo_update_error)
@@ -43,6 +51,7 @@ class ArchivoActivity : AppCompatActivity() {
                         }
                     }
                     addOnFailureListener {
+                        alertDialog.dismiss()
                         val alert= MaterialAlertDialogBuilder(this@ArchivoActivity).apply {
                             setTitle(R.string.archivo_title)
                             setMessage(R.string.archivo_update_error)
@@ -59,10 +68,17 @@ class ArchivoActivity : AppCompatActivity() {
 
     private val selectImageGallery = registerForActivityResult(ActivityResultContracts.GetContent()){ uriNull ->
         uriNull?.let { uri->
+            val alertDialog = MaterialAlertDialogBuilder(this).apply {
+                setTitle(R.string.archivo_title)
+                setMessage(R.string.cargando)
+                setCancelable(false)
+            }.create()
+            alertDialog.show()
             val storage = Firebase.storage.getReference(uri.encodedPath.toString())
             storage.child("images/${uri.encodedPath?.split(" / ")?.last().toString()}")
             storage.putFile(uri).apply {
                 addOnCompleteListener {
+                    alertDialog.dismiss()
                     if (it.isSuccessful){
                         val alert= MaterialAlertDialogBuilder(this@ArchivoActivity).apply {
                             setTitle(R.string.archivo_title)
@@ -80,6 +96,7 @@ class ArchivoActivity : AppCompatActivity() {
                     }
                 }
                 addOnFailureListener {
+                    alertDialog.dismiss()
                     val alert= MaterialAlertDialogBuilder(this@ArchivoActivity).apply {
                         setTitle(R.string.archivo_title)
                         setMessage(R.string.archivo_update_error)

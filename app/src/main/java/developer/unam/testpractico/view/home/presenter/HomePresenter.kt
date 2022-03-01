@@ -10,21 +10,24 @@ import developer.unam.testpractico.view.home.data.HomeInteractor
 class HomePresenter(private val view:IHomeContract.View, private val apiKey:String,private val context: Context):IHomeContract.Presenter {
     private val homeInterector = HomeInteractor(apiKey)
 
-    override fun changePath(path: String) {
+    override fun changePath(path: String,page:Int) {
         view.showLoader()
-        homeInterector.retrieveFavoriteChangePath(object : IHomeContract.CallbackNecesary {
-            override fun onResponse(listMoviesShow: List<Result>, statusCode: Int) {
-                view.hideLoader()
-                Log.e("listShow","list $statusCode ${Gson().toJson(listMoviesShow)}")
-                view.showListMovies(listMoviesShow, statusCode)
-            }
+        homeInterector.retrieveFavoriteChangePath(
+            object : IHomeContract.CallbackNecesary {
+                override fun onResponse(listMoviesShow: List<Result>, statusCode: Int,totalPages:Int) {
+                    view.hideLoader()
+                    Log.e("listShow","list $statusCode ${Gson().toJson(listMoviesShow)}")
+                    view.showListMovies(listMoviesShow, statusCode,totalPages)
+                }
 
-            override fun onError(statusCode: Int) {
-                view.hideLoader()
-                view.errorListMovies(statusCode)
-            }
+                override fun onError(statusCode: Int) {
+                    view.hideLoader()
+                    view.errorListMovies(statusCode)
+                }
 
-        },path,context)
+            },
+            path, context,page
+        )
     }
 
 
