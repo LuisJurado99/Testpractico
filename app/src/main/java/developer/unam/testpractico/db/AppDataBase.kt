@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 import developer.unam.testpractico.retrofit.movies.Result
 
 class AppDatabase(private val context: Context) : SQLiteOpenHelper(context, "bd.db", null, 2) {
@@ -120,6 +121,7 @@ class AppDatabase(private val context: Context) : SQLiteOpenHelper(context, "bd.
             put(FeedReaderContract.FeedEntry.COLUMN_NAME_TITLE,result.title)
             put(FeedReaderContract.FeedEntry.COLUMN_NAME_SUBTITLE,result.poster_path)
         }
+        Log.e("insertE","insertElement")
         writableDatabase.insert(FeedReaderContract.FeedEntry.TABLE_NAME_POPULAR,null,content)
     }
     fun insertMovieTopRated(result: Result){

@@ -41,6 +41,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import developer.unam.testpractico.view.home.view.MainActivity
 import developer.unam.testpractico.R
+import developer.unam.testpractico.singleton.UserFirebaseSingleton
 /*import developer.unam.testpractico.SharedPreferenceUtil*/
 import developer.unam.testpractico.toText
 import java.util.concurrent.TimeUnit
@@ -77,7 +78,7 @@ class ForegroundOnlyLocationService : Service() {
 
             interval = TimeUnit.SECONDS.toMillis(60)
             fastestInterval = TimeUnit.SECONDS.toMillis(30)
-            maxWaitTime = TimeUnit.MINUTES.toMillis(2)
+            maxWaitTime = TimeUnit.MINUTES.toMillis(5)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
@@ -92,6 +93,7 @@ class ForegroundOnlyLocationService : Service() {
                 val map = hashMapOf(
                     ("latitude" to currentLocation?.latitude?:0.0) as Pair<String, Double>,
                     ("longitude" to currentLocation?.longitude?:0.0) as Pair<String, Double>,
+                    ("iduSer" to UserFirebaseSingleton.userFirebase?.displayName) as Pair<String, Double>,
                 )
                 db.collection("ubication").add(map).addOnSuccessListener {
                     Log.e("foregroundService","elementros agregados exitosamente ${it.id}")

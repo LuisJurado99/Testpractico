@@ -7,12 +7,11 @@ interface IHomeContract {
     interface View {
         fun showLoader()
         fun hideLoader()
-        fun showListMovies(listMoviesShow:List<Result>)
+        fun showListMovies(listMoviesShow:List<Result>, statusCode: Int)
         fun errorListMovies(statusCode: Int)
     }
 
     interface Presenter {
-        fun initPresenterActions()
         fun changePath(path:String)
     }
 

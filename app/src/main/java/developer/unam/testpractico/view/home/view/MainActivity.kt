@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -108,9 +109,10 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         val activeNetwork = conMgr.getActiveNetworkInfo();
         val complete = binding.txtSelectFilter.editText as AutoCompleteTextView
         //val network = activeNetwork != null && activeNetwork.isConnected()
-        presenter = HomePresenter(this, getString(R.string.popular), getString(R.string.key_api))
-        presenter.initPresenterActions()
-        //callServiceOrDataBase("popular", network, db)
+        presenter = HomePresenter(this, getString(R.string.key_api),this)
+
+        presenter.changePath(getString(R.string.popular_r))
+
         binding.btnMap.setOnClickListener {
             startActivity(Intent(this, MapsActivity::class.java))
         }
@@ -220,12 +222,18 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         binding.progressCircular.visibility = View.GONE
     }
 
-    override fun showListMovies(listMoviesShow: List<Result>) {
+    override fun showListMovies(listMoviesShow: List<Result>, statusCode: Int) {
+        Log.e("listShow","list ${Gson().toJson(listMoviesShow)}")
+        binding.rvMainMovie.visibility = View.VISIBLE
+        binding.tvNotElement.visibility = View.GONE
         binding.rvMainMovie.layoutManager = GridLayoutManager(this, 2)
         binding.rvMainMovie.adapter = AdapterMovieMain(listMoviesShow, this)
+        if (statusCode!= 400)
+            Toast.makeText(this,"Error conection",Toast.LENGTH_SHORT).show()
     }
 
     override fun errorListMovies(statusCode: Int) {
+        Log.e("listShow","list $statusCode")
         binding.rvMainMovie.visibility = View.GONE
         binding.tvNotElement.visibility = View.VISIBLE
     }
