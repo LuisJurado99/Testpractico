@@ -96,9 +96,11 @@ class ArchivoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityArchivoBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        setSupportActionBar(binding.tbArchivo)
+        supportActionBar?.setHomeButtonEnabled(true)
         binding.btnCamara.setOnClickListener {
             takeImage()
         }
@@ -106,6 +108,11 @@ class ArchivoActivity : AppCompatActivity() {
         binding.imageGalery.setOnClickListener {
             selectImageFromGallery()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return super.onSupportNavigateUp()
     }
 
     private fun selectImageFromGallery() = selectImageGallery.launch("image/*")

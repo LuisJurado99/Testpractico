@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
@@ -76,7 +77,6 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
         val user = UserFirebaseSingleton.userFirebase
         if (user != null) {
-            binding.tvNameUser.text = user.displayName
             Picasso.Builder(this).build().load(user.photoUrl).error(R.drawable.ic_cancel)
                 .into(binding.imgUserEntry)
 
@@ -226,10 +226,10 @@ class MainActivity : AppCompatActivity(), IHomeContract.View {
         Log.e("listShow","list ${Gson().toJson(listMoviesShow)}")
         binding.rvMainMovie.visibility = View.VISIBLE
         binding.tvNotElement.visibility = View.GONE
-        binding.rvMainMovie.layoutManager = GridLayoutManager(this, 2)
+        binding.rvMainMovie.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding.rvMainMovie.adapter = AdapterMovieMain(listMoviesShow, this)
-        if (statusCode!= 400)
-            Toast.makeText(this,"Error conection",Toast.LENGTH_SHORT).show()
+        if (statusCode == 400)
+            Toast.makeText(this,getString(R.string.error_conection),Toast.LENGTH_SHORT).show()
     }
 
     override fun errorListMovies(statusCode: Int) {

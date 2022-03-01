@@ -8,6 +8,7 @@
     tools:context=".view.home.view.MainActivity">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tbMain"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,14 +24,6 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvNameUser"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/txtSelectFilter"
-                app:layout_constraintEnd_toStartOf="@id/imgUserEntry"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -57,6 +50,7 @@
                 android:layout_height="30dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_map"
+                android:layout_marginEnd="@dimen/start_end_margin_component"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/txtSelectFilter"
@@ -87,12 +81,12 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMainMovie"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tbMain"
         tools:listitem="@layout/row_movies" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

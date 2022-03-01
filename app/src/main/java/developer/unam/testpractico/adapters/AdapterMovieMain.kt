@@ -29,9 +29,9 @@ class AdapterMovieMain(
     override fun onBindViewHolder(holder: RecyclerMovie, position: Int) {
         val item = list[position]
         Picasso.Builder(context).build()
-            .load("https://image.tmdb.org/t/p/w500" + list[position].poster_path)
+            .load("https://image.tmdb.org/t/p/w500" + item.poster_path)
             .error(R.drawable.ic_cancel).into(holder.imgMovie)
-        holder.tvNameMovie.text = list[position].title
+        holder.tvNameMovie.text = item.title
     }
 
     override fun getItemCount(): Int = list.size
